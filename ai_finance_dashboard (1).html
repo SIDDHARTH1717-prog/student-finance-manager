@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .expense-input {
+            grid-column: span 3;
+        }
+
+        .budget-overview {
+            grid-column: span 2;
+        }
+
+        .alerts {
+            grid-column: span 1;
+        }
+
+        .predictive-analytics {
+            grid-column: span 2;
+        }
+
+        .goals {
+            grid-column: span 1;
+        }
+
+        .categorization {
+            grid-column: span 3;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .expense-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8f9ff;
+            margin-bottom: 5px;
+            border-radius: 8px;
+        }
+
+        .category-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .prediction-chart {
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            height: 150px;
+            padding: 20px;
+        }
+
+        .prediction-bar {
+            width: 30px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            margin: 0 5px;
+            position: relative;
+        }
+
+        .prediction-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 12px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .metric {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .goal-item {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .goal-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                grid-column: span 1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Financial Manager</h1>
+            <p>Smart expense tracking with predictive analytics</p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Expense Input -->
+            <div class="card expense-input">
+                <h3>💳 Add New Expense</h3>
+                <div class="input-group">
+                    <label>Description</label>
+                    <input type="text" id="expenseDesc" placeholder="e.g., Coffee at Starbucks">
+                </div>
+                <div class="input-group">
+                    <label>Amount ($)</label>
+                    <input type="number" id="expenseAmount" placeholder="0.00" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Date</label>
+                    <input type="date" id="expenseDate">
+                </div>
+                <button class="btn" onclick="addExpense()">Add Expense & Auto-Categorize</button>
+                
+                <div class="expense-list" id="expenseList">
+                    <div class="expense-item">
+                        <span>Sample: Coffee Shop - $4.50</span>
+                        <span class="category-tag">Food & Dining</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Overview -->
+            <div class="card budget-overview">
+                <h3>📊 Budget Overview</h3>
+                <div class="metric">
+                    <div class="metric-value" id="totalSpent">$1,247</div>
+                    <div class="metric-label">Total Spent This Month</div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Food & Dining</span>
+                        <span>$420 / $500</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 84%"></div>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Transportation</span>
+                        <span>$180 / $300</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%"></div>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Entertainment</span>
+                        <span>$95 / $200</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 47.5%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="card alerts">
+                <h3>🚨 Smart Alerts</h3>
+                <div class="alert alert-warning">
+                    <strong>Budget Alert!</strong><br>
+                    You're 84% through your dining budget with 8 days left.
+                </div>
+                <div class="alert alert-success">
+                    <strong>Great Job!</strong><br>
+                    You're on track with your entertainment spending.
+                </div>
+                <div class="alert alert-danger">
+                    <strong>Prediction Alert!</strong><br>
+                    Based on trends, you may exceed your total budget by $150.
+                </div>
+            </div>
+
+            <!-- Predictive Analytics -->
+            <div class="card predictive-analytics">
+                <h3>🔮 Predictive Spending Analytics</h3>
+                <div class="chart-container">
+                    <div class="prediction-chart">
+                        <div class="prediction-bar" style="height: 80px;">
+                            <div class="prediction-label">Week 1</div>
+                        </div>
+                        <div class="prediction-bar" style="height: 120px;">
+                            <div class="prediction-label">Week 2</div>
+                        </div>
+                        <div class="prediction-bar" style="height: 95px;">
+                            <div class="prediction-label">Week 3</div>
+                        </div>
+                        <div class="prediction-bar" style="height: 140px; background: linear-gradient(to top, #ff6b6b, #ffa500);">
+                            <div class="prediction-label">Week 4*</div>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: #718096; text-align: center;">
+                    *Predicted based on AI analysis of spending patterns
+                </p>
+                
+                <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+                    <div class="metric">
+                        <div class="metric-value" style="font-size: 1.3em;">$1,580</div>
+                        <div class="metric-label">Predicted Monthly Total</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" style="font-size: 1.3em;">📈 12%</div>
+                        <div class="metric-label">vs Last Month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals -->
+            <div class="card goals">
+                <h3>🎯 Financial Goals</h3>
+                <div class="goal-item">
+                    <div style="font-weight: 600;">Emergency Fund</div>
+                    <div class="goal-progress">
+                        <span>$2,400 / $5,000</span>
+                        <span style="color: #667eea;">48%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 48%"></div>
+                    </div>
+                </div>
+                
+                <div class="goal-item">
+                    <div style="font-weight: 600;">Vacation Fund</div>
+                    <div class="goal-progress">
+                        <span>$850 / $2,000</span>
+                        <span style="color: #667eea;">42.5%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 42.5%"></div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="addGoal()" style="width: 100%; margin-top: 15px;">
+                    Add New Goal
+                </button>
+            </div>
+
+            <!-- Expense Categorization -->
+            <div class="card categorization">
+                <h3>🤖 AI Expense Categorization</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                        <div style="font-size: 2em;">🍕</div>
+                        <div style="font-weight: 600; margin: 10px 0;">Food & Dining</div>
+                        <div style="color: #667eea; font-size: 1.2em;">$420.50</div>
+                        <div style="font-size: 0.9em; color: #718096;">42% of budget</div>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                        <div style="font-size: 2em;">🚗</div>
+                        <div style="font-weight: 600; margin: 10px 0;">Transportation</div>
+                        <div style="color: #667eea; font-size: 1.2em;">$180.25</div>
+                        <div style="font-size: 0.9em; color: #718096;">18% of budget</div>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                        <div style="font-size: 2em;">🛍️</div>
+                        <div style="font-weight: 600; margin: 10px 0;">Shopping</div>
+                        <div style="color: #667eea; font-size: 1.2em;">$245.80</div>
+                        <div style="font-size: 0.9em; color: #718096;">25% of budget</div>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                        <div style="font-size: 2em;">🎬</div>
+                        <div style="font-weight: 600; margin: 10px 0;">Entertainment</div>
+                        <div style="color: #667eea; font-size: 1.2em;">$95.40</div>
+                        <div style="font-size: 0.9em; color: #718096;">10% of budget</div>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                        <div style="font-size: 2em;">🏥</div>
+                        <div style="font-weight: 600; margin: 10px 0;">Healthcare</div>
+                        <div style="color: #667eea; font-size: 1.2em;">$65.00</div>
+                        <div style="font-size: 0.9em; color: #718096;">7% of budget</div>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 15px; background: #f8f9ff; border-radius: 8px;">
+                        <div style="font-size: 2em;">📚</div>
+                        <div style="font-weight: 600; margin: 10px 0;">Education</div>
+                        <div style="color: #667eea; font-size: 1.2em;">$240.00</div>
+                        <div style="font-size: 0.9em; color: #718096;">24% of budget</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let expenses = [
+            { description: "Coffee Shop", amount: 4.50, date: "2025-09-12", category: "Food & Dining" },
+            { description: "Gas Station", amount: 45.00, date: "2025-09-11", category: "Transportation" },
+            { description: "Grocery Store", amount: 67.80, date: "2025-09-10", category: "Food & Dining" }
+        ];
+
+        let budgets = {
+            "Food & Dining": { limit: 500, spent: 420.50 },
+            "Transportation": { limit: 300, spent: 180.25 },
+            "Entertainment": { limit: 200, spent: 95.40 },
+            "Shopping": { limit: 400, spent: 245.80 },
+            "Healthcare": { limit: 150, spent: 65.00 },
+            "Education": { limit: 300, spent: 240.00 }
+        };
+
+        // AI Categorization Logic
+        function categorizeExpense(description) {
+            const keywords = {
+                "Food & Dining": ["coffee", "restaurant", "food", "lunch", "dinner", "pizza", "burger", "starbucks", "mcdonalds"],
+                "Transportation": ["gas", "uber", "lyft", "bus", "train", "parking", "taxi", "fuel"],
+                "Entertainment": ["movie", "cinema", "spotify", "netflix", "concert", "game", "theater"],
+                "Shopping": ["amazon", "store", "mall", "clothes", "shoes", "target", "walmart"],
+                "Healthcare": ["pharmacy", "doctor", "hospital", "medicine", "health", "clinic"],
+                "Education": ["book", "school", "tuition", "course", "university", "supplies"]
+            };
+
+            const desc = description.toLowerCase();
+            
+            for (const [category, words] of Object.entries(keywords)) {
+                if (words.some(word => desc.includes(word))) {
+                    return category;
+                }
+            }
+            
+            return "Miscellaneous";
+        }
+
+        // Add new expense
+        function addExpense() {
+            const desc = document.getElementById('expenseDesc').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const date = document.getElementById('expenseDate').value;
+
+            if (!desc || !amount || !date) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const category = categorizeExpense(desc);
+            
+            expenses.push({ description: desc, amount, date, category });
+            
+            // Update budget
+            if (budgets[category]) {
+                budgets[category].spent += amount;
+            }
+
+            // Clear inputs
+            document.getElementById('expenseDesc').value = '';
+            document.getElementById('expenseAmount').value = '';
+            document.getElementById('expenseDate').value = '';
+
+            // Update display
+            updateExpenseList();
+            updateBudgetDisplay();
+            updateAlerts();
+            
+            // Show success message
+            showNotification(`Expense categorized as "${category}" and added successfully!`);
+        }
+
+        function updateExpenseList() {
+            const list = document.getElementById('expenseList');
+            list.innerHTML = '';
+            
+            expenses.slice(-5).reverse().forEach(expense => {
+                const item = document.createElement('div');
+                item.className = 'expense-item';
+                item.innerHTML = `
+                    <span>${expense.description} - $${expense.amount.toFixed(2)}</span>
+                    <span class="category-tag">${expense.category}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function updateBudgetDisplay() {
+            const totalSpent = Object.values(budgets).reduce((sum, budget) => sum + budget.spent, 0);
+            document.getElementById('totalSpent').textContent = `$${totalSpent.toFixed(0)}`;
+        }
+
+        function updateAlerts() {
+            // This would contain logic to generate dynamic alerts based on spending patterns
+            // For demo purposes, alerts are static but would be dynamic in a real implementation
+        }
+
+        function addGoal() {
+            const goalName = prompt('Enter goal name:');
+            const goalAmount = prompt('Enter target amount:');
+            
+            if (goalName && goalAmount) {
+                showNotification(`Goal "${goalName}" added successfully!`);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 1000;
+                transform: translateX(300px);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+            setTimeout(() => notification.style.transform = 'translateX(300px)', 3000);
+            setTimeout(() => document.body.removeChild(notification), 3300);
+        }
+
+        // Set today's date as default
+        document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+
+        // Initialize display
+        updateExpenseList();
+        updateBudgetDisplay();
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // This would contain real predictive analytics updates
+            // For demo, we're keeping it static
+        }, 5000);
+    </script>
+</body>
+</html>
